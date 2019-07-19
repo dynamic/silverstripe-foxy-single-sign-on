@@ -2,7 +2,7 @@
 
 namespace Dynamic\Foxy\SingleSignOn\Client;
 
-use Dynamic\Foxy\API\APIClient;
+use Dynamic\Foxy\API\Client\APIClient;
 use Foxy\FoxyClient\FoxyClient;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
