@@ -1,0 +1,10 @@
+---
+name: foxy-single-sign-on-routes
+after:
+  - '#rootroutes'
+  - '#coreroutes'
+---
+
+SilverStripe\Control\Director:
+  rules:
+    'foxy/sso': 'Dynamic\Foxy\SingleSignOn\SingleSignOnController'

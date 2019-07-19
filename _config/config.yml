@@ -1,0 +1,7 @@
+---
+name: foxy-single-sign-on-config
+---
+
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - Dynamic\Foxy\SingleSignOn\Extension\FoxySingleSignOnExtension
