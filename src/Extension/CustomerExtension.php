@@ -2,7 +2,7 @@
 
 namespace Dynamic\Foxy\SingleSignOn\Extension;
 
-use Dynamic\Foxy\API\APIClient;
+use Dynamic\Foxy\API\Client\APIClient;
 use Dynamic\Foxy\SingleSignOn\Client\CustomerClient;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
