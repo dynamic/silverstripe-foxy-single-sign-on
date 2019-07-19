@@ -28,12 +28,6 @@
             "client/dist"
         ]
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:dynamic/silverstripe-foxy-api.git"
-        }
-    ],
     "minimum-stability": "dev",
     "prefer-stable": true
 }
