@@ -8,7 +8,7 @@
     ],
     "license": "BSD-3-Clause",
     "require": {
-        "dynamic/silverstripe-foxy-api": "1.x-dev"
+        "dynamic/silverstripe-foxy-api": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
