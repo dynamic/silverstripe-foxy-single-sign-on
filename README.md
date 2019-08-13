@@ -29,6 +29,8 @@ SilverStripe\security\Security:
 
 **Ensure the Foxy store settings are set to `SHA-1, salted (suffix)` and `enable single sign on` is checked**
 
+**Single sign on url should be set to `http://www.example.com/foxysso`**
+
 [Advanced Store Settings](https://admin.foxycart.com/admin.php?ThisAction=EditAdvancedFeatures)
 
 The value for `customer password hash config` should be `40` as that is the length of the salt in SilverStripe when using `sha1`.
