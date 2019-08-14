@@ -4,6 +4,7 @@ namespace Dynamic\Foxy\SingleSignOn\Factory;
 
 use Dynamic\Foxy\Orders\Factory\FoxyFactory;
 use Dynamic\Foxy\Parser\Foxy\Transaction;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
@@ -88,7 +89,7 @@ class MemberFactory
 
             foreach ($this->config()->get('member_mapping') as $foxy => $ssFoxy) {
                 if ($transaction->hasField($foxy)) {
-                    $order->{$ssFoxy} = $transaction->getField($foxy);
+                    $customer->{$ssFoxy} = $transaction->getField($foxy);
                 }
             }
 
