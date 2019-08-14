@@ -1,0 +1,13 @@
+---
+name: foxy-memberfactory-config
+---
+Dynamic\Foxy\SingleSignOn\Factory\MemberFactory:
+  member_mapping:
+    customer_id: 'Customer_ID'
+    customer_email: 'Email'
+    customer_first_name: 'FirstName'
+    customer_last_name: 'Surname'
+    customer_email: 'Email'
+    customer_password: 'Password'
+    customer_password_salt: 'Salt'
+    #customer_password_hash_type: 'PasswordEncryption'
