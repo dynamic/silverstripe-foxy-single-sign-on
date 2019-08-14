@@ -14,6 +14,6 @@ class FoxyControllerMemberExtension extends Extension
      */
     public function doAdditionalParse(Transaction $transaction)
     {
-        MemberFactory::create($transaction)->getOrder();
+        MemberFactory::create($transaction)->getMember();
     }
 }
