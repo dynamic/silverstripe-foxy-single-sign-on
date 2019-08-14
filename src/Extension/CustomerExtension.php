@@ -50,12 +50,14 @@ class CustomerExtension extends DataExtension
             $client = CustomerClient::create($this->owner);
             $data = $client->putCustomer();
 
-            if (!$this->owner->Customer_ID) {
-                $parts = explode('/', $data['_links']['self']['href']);
+            if (isset($data) && !$this->owner->Customer_ID) {
+                if (isset($data['_links'])) {
+                    $parts = explode('/', $data['_links']['self']['href']);
 
-                $customerID = $parts[count($parts) - 1];
+                    $customerID = $parts[count($parts) - 1];
 
-                $this->owner->Customer_ID = $customerID;
+                    $this->owner->Customer_ID = $customerID;
+                }
             }
         }
     }
