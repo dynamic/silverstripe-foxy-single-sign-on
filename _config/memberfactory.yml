@@ -7,7 +7,6 @@ Dynamic\Foxy\SingleSignOn\Factory\MemberFactory:
     customer_email: 'Email'
     customer_first_name: 'FirstName'
     customer_last_name: 'Surname'
-    customer_email: 'Email'
     customer_password: 'Password'
     customer_password_salt: 'Salt'
     #customer_password_hash_type: 'PasswordEncryption'
