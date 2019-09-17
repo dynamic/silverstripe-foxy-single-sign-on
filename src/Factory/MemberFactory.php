@@ -11,6 +11,8 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\View\ArrayData;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Core\Injector\Injector;
 
 class MemberFactory
 {
@@ -93,13 +95,21 @@ class MemberFactory
                 }
             }
 
-            /** manuall set encryption type to sha1 */
-            $customer->PasswordEncryption = 'sha1';
-
+            $doubleWrite = $customer->isChanged('Password');
             /** flag to prevent push to Foxy on write */
             $customer->FromDataFeed = true;
-
             $customer->write();
+
+            if ($doubleWrite) {
+                /** flag to prevent push to Foxy on write */
+                $customer->FromDataFeed = true;
+                $salt = $transaction->getField('customer_password_salt');
+
+                $customer->Salt = $salt;
+                /** manuall set encryption type to sha1 */
+                $customer->PasswordEncryption = 'sha1_v2.4';
+                $customer->write();
+            }
 
             /** re-enable password encryption */
             Config::modify()->set(Security::class, 'password_encryption_algorithm', $encryption);
