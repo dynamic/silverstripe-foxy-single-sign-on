@@ -18,12 +18,12 @@ composer require dynamic/silverstripe-foxy-single-sign-on ^1.0
 
 ## Configuration
 
-**Ensure the authenticator is set to "sha1"**
+**Ensure the authenticator is set to "sha1_v2.4"**
 
 
 ```yml
 SilverStripe\security\Security:
-  password_encryption_algorithm: 'sha1'
+  password_encryption_algorithm: 'sha1_v2.4'
 
 ```
 
@@ -33,7 +33,7 @@ SilverStripe\security\Security:
 
 [Advanced Store Settings](https://admin.foxycart.com/admin.php?ThisAction=EditAdvancedFeatures)
 
-The value for `customer password hash config` should be `40` as that is the length of the salt in SilverStripe when using `sha1`.
+The value for `customer password hash config` should be `40` as that is the length of the salt in SilverStripe when using `sha1_v2.4`.
 
 
 ## Documentation
