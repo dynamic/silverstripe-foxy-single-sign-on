@@ -78,8 +78,10 @@ class MemberFactory
         $transaction = $this->getTransaction()->getParsedTransactionData()->getField('transaction');
 
         // if not a guest transaction in Foxy
-        if ($transaction->getField('customer_email')
-            && $transaction->getField('is_anonymous') == 0) {
+        if (
+            $transaction->getField('customer_email')
+            && $transaction->getField('is_anonymous') == 0
+        ) {
 
             /** @var $encryption - disable password encryption to prevent double encryption */
             $encryption = Config::inst()->get(Security::class, 'password_encryption_algorithm');
