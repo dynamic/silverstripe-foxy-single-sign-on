@@ -2,6 +2,15 @@
 
 An add-on module for SilverStripe Foxy that allows single sign on with your Foxy shop.
 
+[![Build Status](https://travis-ci.org/dynamic/silverstripe-foxy-single-sign-on.svg?branch=master)](https://travis-ci.org/dynamic/silverstripe-foxy-single-sign-on)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/badges/build.png?b=master)](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/build-status/master)
+[![codecov](https://codecov.io/gh/dynamic/silverstripe-foxy-single-sign-on/branch/master/graph/badge.svg)](https://codecov.io/gh/dynamic/silverstripe-foxy-single-sign-on)
+
+[![Latest Stable Version](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/v/stable)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
+[![Total Downloads](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/downloads)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
+[![Latest Unstable Version](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/v/unstable)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
+[![License](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/license)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
 
 ## Requirements
 
