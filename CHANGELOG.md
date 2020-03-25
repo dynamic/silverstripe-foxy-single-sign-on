@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/dynamic/silverstripe-foxy-single-sign-on/tree/1.0.1) (2020-03-25)
+
+[Full Changelog](https://github.com/dynamic/silverstripe-foxy-single-sign-on/compare/1.0.0...1.0.1)
+
+**Merged pull requests:**
+
+- Fixed sso redirect adding extra backslash [\#17](https://github.com/dynamic/silverstripe-foxy-single-sign-on/pull/17) ([mak001](https://github.com/mak001))
+
 ## [1.0.0](https://github.com/dynamic/silverstripe-foxy-single-sign-on/tree/1.0.0) (2019-10-30)
 
 [Full Changelog](https://github.com/dynamic/silverstripe-foxy-single-sign-on/compare/43bab7bc75cc94eda4a498b254edf68425d46df7...1.0.0)
@@ -16,6 +24,7 @@
 
 **Merged pull requests:**
 
+- BUGFIX Travis phpcs config [\#15](https://github.com/dynamic/silverstripe-foxy-single-sign-on/pull/15) ([jsirish](https://github.com/jsirish))
 - BUGFIX use sha1\_v2.4 for hash method [\#14](https://github.com/dynamic/silverstripe-foxy-single-sign-on/pull/14) ([muskie9](https://github.com/muskie9))
 - BUGFIX duplicate email mapping [\#13](https://github.com/dynamic/silverstripe-foxy-single-sign-on/pull/13) ([muskie9](https://github.com/muskie9))
 - BUGFIX MemberFactory - update references from $order to $customer [\#11](https://github.com/dynamic/silverstripe-foxy-single-sign-on/pull/11) ([jsirish](https://github.com/jsirish))
