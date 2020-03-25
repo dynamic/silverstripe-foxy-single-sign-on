@@ -56,6 +56,7 @@ class SingleSignOnController extends Controller
 
         $httpQuery = http_build_query($params);
 
-        $this->redirect("{$helper::StoreURL()}/checkout?$httpQuery");
+        // the '/' between the url and checkout is included from the foxy helper
+        $this->redirect("{$helper::StoreURL()}checkout?$httpQuery");
     }
 }
