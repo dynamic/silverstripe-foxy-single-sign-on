@@ -2,68 +2,50 @@
 
 namespace Dynamic\Foxy\SingleSignOn\Factory;
 
-use Dynamic\Foxy\Orders\Factory\FoxyFactory;
 use Dynamic\Foxy\Parser\Foxy\Transaction;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\View\ArrayData;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Core\Injector\Injector;
 
+/**
+ * Factory for creating/updating Member records from Foxy transaction data
+ */
 class MemberFactory
 {
     use Configurable;
     use Extensible;
     use Injectable;
 
-    /**
-     * @var Transaction
-     */
-    private $transaction;
+    private ?Transaction $transaction = null;
 
-    /**
-     * @var
-     */
-    private $member;
+    private ?Member $member = null;
 
-    /**
-     * OrderDetailFactory constructor.
-     * @param Transaction|null $transaction
-     */
-    public function __construct(Transaction $transaction = null)
+    public function __construct(?Transaction $transaction = null)
     {
-        if ($transaction instanceof Transaction && $transaction !== null) {
+        if ($transaction instanceof Transaction) {
             $this->setTransaction($transaction);
         }
     }
 
-    /**
-     * @param Transaction $transaction
-     * @return $this
-     */
-    public function setTransaction(Transaction $transaction)
+    public function setTransaction(Transaction $transaction): self
     {
         $this->transaction = $transaction;
 
         return $this;
     }
 
-    /**
-     * @return Transaction
-     */
-    protected function getTransaction()
+    protected function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }
 
-    /**
-     * @return Member
-     */
-    public function getMember()
+    public function getMember(): ?Member
     {
         if (!$this->member instanceof Member) {
             $this->setMember();
@@ -72,49 +54,72 @@ class MemberFactory
         return $this->member;
     }
 
-    protected function setMember()
+    protected function setMember(): void
     {
+        $transactionData = $this->getTransaction()?->getParsedTransactionData();
+        if (!$transactionData) {
+            return;
+        }
+
         /** @var ArrayData $transaction */
-        $transaction = $this->getTransaction()->getParsedTransactionData()->getField('transaction');
+        $transaction = $transactionData->getField('transaction');
 
-        // if not a guest transaction in Foxy
-        if (
-            $transaction->getField('customer_email')
-            && $transaction->getField('is_anonymous') == 0
-        ) {
+        // Skip guest transactions in Foxy
+        $email = $transaction->getField('customer_email');
+        $isAnonymous = $transaction->getField('is_anonymous');
 
-            /** @var $encryption - disable password encryption to prevent double encryption */
-            $encryption = Config::inst()->get(Security::class, 'password_encryption_algorithm');
-            Config::modify()->set(Security::class, 'password_encryption_algorithm', 'none');
+        if (!$email || $isAnonymous == 1) {
+            return;
+        }
 
-            if (!$customer = Member::get()->filter('Email', $transaction->getField('customer_email'))->first()) {
+        // Disable password encryption to prevent double-hashing
+        // (Foxy sends pre-hashed bcrypt passwords)
+        $originalEncryption = Config::inst()->get(Security::class, 'password_encryption_algorithm');
+        Config::modify()->set(Security::class, 'password_encryption_algorithm', 'none');
+
+        try {
+            // Find or create member by email
+            $customer = Member::get()->filter('Email', $email)->first();
+            if (!$customer) {
                 $customer = Member::create();
             }
 
-            foreach ($this->config()->get('member_mapping') as $foxy => $ssFoxy) {
-                if ($transaction->hasField($foxy)) {
-                    $customer->{$ssFoxy} = $transaction->getField($foxy);
+            // Map Foxy fields to Member fields
+            foreach ($this->config()->get('member_mapping') as $foxyField => $memberField) {
+                if ($transaction->hasField($foxyField)) {
+                    $customer->{$memberField} = $transaction->getField($foxyField);
                 }
             }
 
-            $doubleWrite = $customer->isChanged('Password');
-            /** flag to prevent push to Foxy on write */
-            $customer->FromDataFeed = true;
-            $customer->write();
-
-            if ($doubleWrite) {
-                /** flag to prevent push to Foxy on write */
-                $customer->FromDataFeed = true;
-                $salt = $transaction->getField('customer_password_salt');
-
-                $customer->Salt = $salt;
-                /** manuall set encryption type to sha1 */
-                $customer->PasswordEncryption = 'sha1_v2.4';
-                $customer->write();
+            // Extract salt if password hash is present (required for SS BlowfishEncryptor)
+            if ($transaction->hasField('password_hash')) {
+                $hash = $transaction->getField('password_hash');
+                if ($hash && str_starts_with($hash, '$2y$')) {
+                    $customer->Salt = substr($hash, 4, 25);
+                }
             }
 
-            /** re-enable password encryption */
-            Config::modify()->set(Security::class, 'password_encryption_algorithm', $encryption);
+            // Flag to prevent push back to Foxy on write
+            $customer->FromDataFeed = true;
+
+            // With bcrypt, the hash includes the algorithm info and salt,
+            // so Silverstripe can validate it directly with password_verify()
+            $customer->write();
+
+            // Force the encryption algorithm back to the site default in the database
+            // This ensures Silverstripe knows how to validate the bcrypt hash (usually 'blowfish')
+            // but prevents the double-hashing that would occur if we wrote it with that algorithm active.
+            if ($originalEncryption && $originalEncryption !== 'none') {
+                $table = 'Member';
+                $sql = "UPDATE \"$table\" SET \"PasswordEncryption\" = ? WHERE \"ID\" = ?";
+                \SilverStripe\ORM\DB::prepared_query($sql, [$originalEncryption, $customer->ID]);
+            }
+
+            $this->member = $customer;
+        } finally {
+            // Re-enable password encryption
+            Config::modify()->set(Security::class, 'password_encryption_algorithm', $originalEncryption);
         }
     }
 }
+

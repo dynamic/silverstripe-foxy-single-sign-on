@@ -1,80 +1,83 @@
 # SilverStripe Foxy Single Sign On
 
-An add-on module for SilverStripe Foxy that allows single sign on with your Foxy shop.
-
-[![Build Status](https://travis-ci.org/dynamic/silverstripe-foxy-single-sign-on.svg?branch=master)](https://travis-ci.org/dynamic/silverstripe-foxy-single-sign-on)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/badges/build.png?b=master)](https://scrutinizer-ci.com/g/dynamic/silverstripe-foxy-single-sign-on/build-status/master)
-[![codecov](https://codecov.io/gh/dynamic/silverstripe-foxy-single-sign-on/branch/master/graph/badge.svg)](https://codecov.io/gh/dynamic/silverstripe-foxy-single-sign-on)
+An add-on module for SilverStripe Foxy that enables Single Sign-On with your Foxy.io store.
 
 [![Latest Stable Version](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/v/stable)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
 [![Total Downloads](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/downloads)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
-[![Latest Unstable Version](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/v/unstable)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
 [![License](https://poser.pugx.org/dynamic/silverstripe-foxy-single-sign-on/license)](https://packagist.org/packages/dynamic/silverstripe-foxy-single-sign-on)
 
 ## Requirements
 
-* SilverStripe ^4.0
-* SilverStripe Foxy API ^1.0
-
+* PHP ^8.1
+* SilverStripe CMS ^5.0
+* dynamic/silverstripe-foxy-api ^2.0
 
 ## Installation
 
+```bash
+composer require dynamic/silverstripe-foxy-single-sign-on ^2.0
 ```
-composer require dynamic/silverstripe-foxy-single-sign-on ^1.0
-```
-
 
 ## Configuration
 
-**Ensure the authenticator is set to "sha1_v2.4"**
+### Foxy Store Settings
 
+In your [Foxy.io store admin](https://admin.foxy.io/), configure the following settings:
 
-```yml
-SilverStripe\security\Security:
-  password_encryption_algorithm: 'sha1_v2.4'
+1. **Customer Password Hash Type**: `BCrypt`
+2. **Customer Password Hash Config**: `10` (bcrypt cost factor - matches Silverstripe default)
+3. **Enable Single Sign On**: ✓ **Checked** (Required)
+4. **Single Sign On URL**: `https://www.example.com/foxysso`
 
+### Silverstripe Configuration
+
+No special password configuration is required - Silverstripe CMS 5 uses bcrypt by default, which is compatible with Foxy's BCrypt password hash type.
+
+### Optional: API Configuration
+
+To enable customer syncing between Silverstripe and Foxy, configure API credentials. Create a **Private Integration** at [Foxy Integrations](https://admin.foxy.io/admin.php?ThisAction=AddIntegration).
+
+**Recommended: Add to `.env`:**
+
+```bash
+FOXY_API_CLIENT_ID="your-client-id"
+FOXY_API_CLIENT_SECRET="your-client-secret"
+FOXY_API_ACCESS_TOKEN="your-access-token"
+FOXY_API_REFRESH_TOKEN="your-refresh-token"
 ```
 
-**Ensure the Foxy store settings are set to `SHA-1, salted (suffix)` and `enable single sign on` is checked**
+**Enable API in YAML config:**
 
-**Single sign on url should be set to `http://www.example.com/foxysso`**
-
-[Advanced Store Settings](https://admin.foxycart.com/admin.php?ThisAction=EditAdvancedFeatures)
-
-The value for `customer password hash config` should be `40` as that is the length of the salt in SilverStripe when using `sha1_v2.4`.
-
+```yaml
+Dynamic\Foxy\API\Client\APIClient:
+  enable_api: true
+```
 
 ## Documentation
- * [Documentation readme](docs/en/readme.md)
 
-Add links into your docs/<language> folder here unless your module only requires minimal documentation 
-in that case, add here and remove the docs folder. You might use this as a quick table of content if you
-mhave multiple documentation pages.
-
+* [Documentation readme](docs/en/readme.md)
 
 ## Maintainers
- * [Dynamic](https://www.dynamicagency.com) (<dev@dynamicagency.com>)
- 
- 
+
+* [Dynamic](https://www.dynamicagency.com) (<dev@dynamicagency.com>)
+
 ## Bugtracker
+
 Bugs are tracked in the issues section of this repository. Before submitting an issue please read over 
-existing issues to ensure yours is unique. 
- 
+existing issues to ensure yours is unique.
+
 If the issue does look like a new bug:
- 
- - Create a new issue
- - Describe the steps required to reproduce your issue, and the expected outcome. Unit tests, screenshots 
- and screencasts can help here.
- - Describe your environment as detailed as possible: SilverStripe version, Browser, PHP version, 
- Operating System, any installed SilverStripe modules.
- 
-Please report security issues to the module maintainers directly. Please don't file security issues in the bugtracker.
- 
- 
+
+- Create a new issue
+- Describe the steps required to reproduce your issue, and the expected outcome
+- Describe your environment: SilverStripe version, PHP version, any installed modules
+
+Please report security issues to the module maintainers directly.
+
 ## Development and contribution
+
 If you would like to make contributions to the module please ensure you raise a pull request and discuss with the module maintainers.
 
-
 ## License
+
 See [License](license.md)

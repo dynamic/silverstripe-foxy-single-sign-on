@@ -10,8 +10,7 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Security\Member;
 
 /**
- * Class CustomerClient
- * @package Dynamic\FoxyStripe\API\Client
+ * Client for syncing customer data with Foxy.io API
  */
 class CustomerClient extends APIClient
 {
@@ -19,38 +18,34 @@ class CustomerClient extends APIClient
     use Extensible;
     use Injectable;
 
-    /**
-     * @var bool
-     */
-    private static $foxy_sso_enabled = true;
+    private static bool $foxy_sso_enabled = true;
 
     /**
-     * @var array
+     * Mapping of Silverstripe Member fields to Foxy customer fields.
+     * Note: Salt is not needed for bcrypt as it's embedded in the hash.
      */
-    private static $customer_map = [
+    private static array $customer_map = [
         'Customer_ID' => 'id',
         'FirstName' => 'first_name',
         'Surname' => 'last_name',
         'Email' => 'email',
-        'Salt' => 'password_salt',
         'Password' => 'password_hash',
     ];
 
     /**
-     * @var string
+     * Password hash type for Foxy.io - must match store settings.
+     * Options: bcrypt, sha1, phpass, drupal, etc.
+     * See: https://api.foxycart.com/rels/customer_password_hash_types
      */
-    //private static $foxy_password_hash_type = 'bcrypt';
-    private static $foxy_password_hash_type = 'sha1';
+    private static string $foxy_password_hash_type = 'bcrypt';
 
     /**
-     * @var Member
+     * BCrypt cost factor (default 10, Foxy default 15)
      */
-    private $customer;
+    private static int $foxy_password_hash_config = 10;
 
-    /**
-     * CustomerClient constructor.
-     * @param Member $customer
-     */
+    private ?Member $customer = null;
+
     public function __construct(Member $customer)
     {
         parent::__construct();
@@ -58,53 +53,39 @@ class CustomerClient extends APIClient
         $this->setCustomer($customer);
     }
 
-    /**
-     * @param $customer
-     * @return $this
-     */
-    public function setCustomer($customer)
+    public function setCustomer(Member $customer): self
     {
         $this->customer = $customer;
 
         return $this;
     }
 
-    /**
-     * @return Member
-     */
-    public function getCustomer()
+    public function getCustomer(): ?Member
     {
         return $this->customer;
     }
 
-    /**
-     * @param bool $single
-     * @return string
-     */
-    private function getAPIURI($single = false)
+    private function getAPIURI(bool $single = false): string
     {
         $parts = [FoxyClient::PRODUCTION_API_HOME, 'customers'];
 
         if ($single) {
-            $parts[] = $this->getCustomer()->Customer_ID;
+            $parts[] = $this->getCustomer()?->Customer_ID;
         }
 
         return implode('/', $parts);
     }
 
-    private function getNewCustomerAPIURI()
+    private function getNewCustomerAPIURI(): string
     {
         return implode('/', [$this->getCurrentStore(), 'customers']);
     }
 
-    /**
-     * @return mixed
-     */
-    public function putCustomer()
+    public function putCustomer(): mixed
     {
         $client = $this->getClient();
 
-        if (!$this->getCustomer()->Customer_ID) {
+        if (!$this->getCustomer()?->Customer_ID) {
             $response = $client->post($this->getNewCustomerAPIURI(), $this->getSendData());
         } else {
             $response = $client->patch($this->getAPIURI(true), $this->getSendData());
@@ -113,41 +94,29 @@ class CustomerClient extends APIClient
         return $response;
     }
 
-    /**
-     * @return mixed
-     */
-    public function fetchCustomer()
+    public function fetchCustomer(): mixed
     {
         $client = $this->getClient();
 
-        $result = $client->get($this->getAPIURI(true));
-
-        return $result;
+        return $client->get($this->getAPIURI(true));
     }
 
-    /**
-     * @return mixed
-     */
-    public function fetchCustomers()
+    public function fetchCustomers(): mixed
     {
         $client = $this->getClient();
 
-        $result = $client->get($this->getAPIURI(true));
-
-        return $result;
+        return $client->get($this->getAPIURI(true));
     }
 
-    /**
-     *
-     */
-    public function deleteCustomer()
+    public function deleteCustomer(): void
     {
+        // Not yet implemented
     }
 
     /**
-     * @return array
+     * Build data payload for Foxy API from Member fields
      */
-    public function getSendData()
+    public function getSendData(): array
     {
         $data = [];
 
@@ -157,8 +126,13 @@ class CustomerClient extends APIClient
                     $data[$remoteField] = $customer->{$localField};
                 }
             }
+
+            // Add password hash type and config for Foxy
+            $data['password_hash_type'] = $this->config()->get('foxy_password_hash_type');
+            $data['password_hash_config'] = $this->config()->get('foxy_password_hash_config');
         }
 
         return $data;
     }
 }
+

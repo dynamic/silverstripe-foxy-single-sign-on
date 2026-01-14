@@ -4,72 +4,51 @@ namespace Dynamic\Foxy\SingleSignOn\Extension;
 
 use Dynamic\Foxy\API\Client\APIClient;
 use Dynamic\Foxy\SingleSignOn\Client\CustomerClient;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\FormAction;
 use SilverStripe\ORM\DataExtension;
 
 /**
- * Class CustomerExtension
- * @package Dynamic\Foxy\SingleSignOn\Extension
+ * Extension to sync Member data with Foxy.io customer records
  */
 class CustomerExtension extends DataExtension
 {
-    /**
-     * @var array
-     */
-    private static $db = [
+    private static array $db = [
         'Customer_ID' => 'Int',
     ];
 
-    /**
-     * @var array
-     */
-    /*private static $indexes = [
-        'foxy-single-sign-on' => [
-            'type' => 'unique',
-            'columns' => ['Customer_ID'],
-        ],
-    ];*/
-
-    /**
-     * @param FieldList $actions
-     */
-    public function updateCMSActions(FieldList $actions)
-    {
-        $actions->push(FormAction::create('syncFromFoxy')->setTitle('Sync Customer From Foxy'));
-    }
-
-    /**
-     * @throws \SilverStripe\ORM\ValidationException
-     */
-    public function onBeforeWrite()
+    public function onBeforeWrite(): void
     {
         parent::onBeforeWrite();
+
+        // Skip sync if this write is from a Foxy data feed (prevents infinite loop)
+        if ($this->owner->FromDataFeed ?? false) {
+            return;
+        }
 
         if ($this->isValidAPI()) {
             $client = CustomerClient::create($this->owner);
             $data = $client->putCustomer();
 
-            if (isset($data) && !$this->owner->Customer_ID) {
-                if (isset($data['_links'])) {
+            // Extract Customer_ID from response if this is a new customer
+            if (!empty($data) && !$this->owner->Customer_ID) {
+                if (isset($data['_links']['self']['href'])) {
                     $parts = explode('/', $data['_links']['self']['href']);
+                    $customerID = end($parts);
 
-                    $customerID = $parts[count($parts) - 1];
-
-                    $this->owner->Customer_ID = $customerID;
+                    if (is_numeric($customerID)) {
+                        $this->owner->Customer_ID = (int) $customerID;
+                    }
                 }
             }
         }
     }
 
-    /**
-     * @return bool
-     * @throws \SilverStripe\ORM\ValidationException
-     */
-    protected function isValidAPI()
+    protected function isValidAPI(): bool
     {
-        return APIClient::config()->get('enable_api')
+        return (bool) (
+            APIClient::config()->get('enable_api')
             && CustomerClient::config()->get('foxy_sso_enabled')
-            && APIClient::is_valid();
+            && APIClient::is_valid()
+        );
     }
 }
+

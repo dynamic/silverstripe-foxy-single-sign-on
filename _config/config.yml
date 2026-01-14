@@ -8,3 +8,11 @@ SilverStripe\Admin\LeftAndMain:
 Dynamic\Foxy\Parser\Controller\FoxyController:
   extensions:
     - Dynamic\Foxy\SingleSignOn\Extension\FoxyControllerMemberExtension
+
+SilverStripe\Security\Member:
+  extensions:
+    - Dynamic\Foxy\SingleSignOn\Extension\CustomerExtension
+
+SilverStripe\Forms\GridField\GridFieldDetailForm_ItemRequest:
+  extensions:
+    - Dynamic\Foxy\SingleSignOn\Extension\MemberItemRequestExtension

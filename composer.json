@@ -1,23 +1,22 @@
 {
     "name": "dynamic/silverstripe-foxy-single-sign-on",
-    "description": "A skeleton for SilverStripe modules.",
+    "description": "Single Sign On module for SilverStripe Foxy integration with Foxy.io",
     "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
-        "CMS"
+        "CMS",
+        "Foxy.io",
+        "SSO",
+        "single-sign-on"
     ],
     "license": "BSD-3-Clause",
     "require": {
-        "dynamic/silverstripe-foxy-api": "^1.0"
+        "php": "^8.1",
+        "dynamic/silverstripe-foxy-api": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7",
-        "squizlabs/php_codesniffer": "^3.0",
-        "phpmd/phpmd": "^2.6",
-        "sebastian/phpcpd": "^3.0",
-        "phploc/phploc": "^4.0",
-        "pdepend/pdepend": "^2.5",
-        "theseer/phpdox": "^0.11.0"
+        "phpunit/phpunit": "^9.5",
+        "squizlabs/php_codesniffer": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -27,7 +26,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.x-dev"
+            "dev-master": "2.x-dev"
         }
     },
     "minimum-stability": "dev",
